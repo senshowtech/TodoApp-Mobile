@@ -1,9 +1,10 @@
 import React from 'react';
 import {View, ScrollView} from 'react-native';
-import ButtonComponent from '../component/ButtonComponent';
-import CardComponent from '../component/CardComponent';
-import PortalComponent from '../component/PortalComponent';
+import {useIsFocused} from '@react-navigation/native';
 import {API} from '../config/axios';
+import ButtonComponent from '../component/Home/ButtonComponent';
+import CardComponent from '../component/Home/CardComponent';
+import PortalComponent from '../component/Home/PortalComponent';
 
 export default function HomeScreen() {
   const [visible, setVisible] = React.useState(false);
@@ -12,6 +13,7 @@ export default function HomeScreen() {
   const [dataTodo, setdataTodo] = React.useState([]);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
+  const isFocused = useIsFocused();
 
   React.useEffect(() => {
     const getTodo = async () => {
@@ -23,7 +25,10 @@ export default function HomeScreen() {
       }
     };
     getTodo();
-  }, [id]);
+    if (isFocused) {
+      getTodo();
+    }
+  }, [id, isFocused]);
 
   const SaveTodo = async () => {
     try {
