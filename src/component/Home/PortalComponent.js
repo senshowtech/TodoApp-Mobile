@@ -19,8 +19,8 @@ export default function PortalComponent({
         <TextInput
           label="Task"
           name="task"
-          value={task}
-          onChangeText={val => setTask(val)}
+          value={task.task}
+          onChangeText={val => setTask({...task, task: val})}
         />
         <Button mode="contained" onPress={SaveTodo} style={{marginTop: 20}}>
           Save

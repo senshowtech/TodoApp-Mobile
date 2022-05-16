@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, ScrollView} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
+import {getUniqueId, getManufacturer} from 'react-native-device-info';
 import {API} from '../config/axios';
 import ButtonComponent from '../component/Home/ButtonComponent';
 import CardComponent from '../component/Home/CardComponent';
@@ -9,7 +10,11 @@ import PortalComponent from '../component/Home/PortalComponent';
 export default function HomeScreen() {
   const [visible, setVisible] = React.useState(false);
   const [id, setId] = React.useState(0);
-  const [task, setTask] = React.useState('');
+  const [task, setTask] = React.useState({
+    task: '',
+    uuid: '',
+    doing: '',
+  });
   const [dataTodo, setdataTodo] = React.useState([]);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
@@ -28,6 +33,11 @@ export default function HomeScreen() {
     if (isFocused) {
       getTodo();
     }
+    setTask({
+      ...task,
+      doing: 'false',
+      uuid: getUniqueId(),
+    });
   }, [id, isFocused]);
 
   const SaveTodo = async () => {
@@ -38,7 +48,9 @@ export default function HomeScreen() {
         },
       };
       const data = {
-        task: task,
+        task: task.task,
+        doing: task.doing,
+        uuid: task.uuid,
       };
       const response = await API.post('/todo', data, config);
       setId(response.data.data.todo.id);
@@ -62,7 +74,7 @@ export default function HomeScreen() {
       <View style={{marginTop: 20}}>
         <ButtonComponent showModal={showModal} setVisible={setVisible} />
       </View>
-      <View style={{padding: 15, marginTop: -20}}>
+      <View style={{padding: 15, marginTop: -10}}>
         {dataTodo.map(item => {
           return <CardComponent key={item.id} item={item} />;
         })}
