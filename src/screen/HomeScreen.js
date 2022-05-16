@@ -59,7 +59,9 @@ export default function HomeScreen() {
 
   return (
     <ScrollView>
-      <ButtonComponent showModal={showModal} setVisible={setVisible} />
+      <View style={{marginTop: 20}}>
+        <ButtonComponent showModal={showModal} setVisible={setVisible} />
+      </View>
       <View style={{padding: 15, marginTop: -20}}>
         {dataTodo.map(item => {
           return <CardComponent key={item.id} item={item} />;

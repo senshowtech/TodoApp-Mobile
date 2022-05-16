@@ -73,7 +73,7 @@ export default function DetailScreen({route}) {
 
   return (
     <View>
-      <View style={{padding: 10, width: 120, flexDirection: 'row'}}>
+      <View style={{width: 120, flexDirection: 'row'}}>
         <ButtonComponent showModal={showModal} showDialog={showDialog} />
       </View>
       <View style={{padding: 20, marginTop: -20}}>
