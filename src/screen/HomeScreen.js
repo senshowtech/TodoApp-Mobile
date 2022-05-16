@@ -23,7 +23,7 @@ export default function HomeScreen() {
   React.useEffect(() => {
     const getTodo = async () => {
       try {
-        const response = await API.get('/todos');
+        const response = await API.get(`/todos/${getUniqueId()}`);
         setdataTodo(response.data.data.todo);
       } catch (error) {
         console.log(error);
