@@ -15,7 +15,7 @@ export default function PortalComponent({
         visible={visible}
         onDismiss={hideModal}
         contentContainerStyle={containerStyle}>
-        <Headline>Add Task</Headline>
+        <Headline>Add Todo</Headline>
         <TextInput
           label="Task"
           name="task"

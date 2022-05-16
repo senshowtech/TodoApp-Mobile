@@ -1,13 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import {
-  Title,
-  Button,
-  Modal,
-  Portal,
-  TextInput,
-  Headline,
-} from 'react-native-paper';
+import {Title} from 'react-native-paper';
 import {API} from '../config/axios';
 import {useNavigation} from '@react-navigation/native';
 import ButtonComponent from '../component/Detail/ButtonComponent';
@@ -15,10 +8,13 @@ import PortalComponent from '../component/Detail/PortalComponent';
 
 export default function DetailScreen({route}) {
   const [visible, setVisible] = React.useState(false);
+  const [visibleDialog, setVisibleDialog] = React.useState(false);
   const [task, setTask] = React.useState('');
   const [id, setId] = React.useState(0);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
+  const showDialog = () => setVisibleDialog(true);
+  const hideDialog = () => setVisibleDialog(false);
   const navigation = useNavigation();
 
   React.useEffect(() => {
@@ -78,18 +74,21 @@ export default function DetailScreen({route}) {
   return (
     <View>
       <View style={{padding: 10, width: 120, flexDirection: 'row'}}>
-        <ButtonComponent showModal={showModal} DeleteTodo={DeleteTodo} />
+        <ButtonComponent showModal={showModal} showDialog={showDialog} />
       </View>
       <View style={{padding: 20, marginTop: -20}}>
         <Title>{task}</Title>
       </View>
       <PortalComponent
-        hideModal={hideModal}
+        hideDialog={hideDialog}
+        visibleDialog={visibleDialog}
         setTask={setTask}
+        hideModal={hideModal}
         visible={visible}
         containerStyle={containerStyle}
         task={task}
         EditTodo={EditTodo}
+        DeleteTodo={DeleteTodo}
       />
     </View>
   );
