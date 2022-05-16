@@ -10,6 +10,8 @@ import {
 } from 'react-native-paper';
 import {API} from '../config/axios';
 import {useNavigation} from '@react-navigation/native';
+import ButtonComponent from '../component/Detail/ButtonComponent';
+import PortalComponent from '../component/Detail/PortalComponent';
 
 export default function DetailScreen({route}) {
   const [visible, setVisible] = React.useState(false);
@@ -49,51 +51,46 @@ export default function DetailScreen({route}) {
       if (response.status === 201) {
         setVisible(false);
         setId(response.data.data.todos.id);
-        // navigation.navigate('TodoApp', response.data.data.todos.id);
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  const DeleteTodo = async () => {
+    try {
+      const response = await API.delete(`/todo/${route.params.id}`);
+      if (response.status === 201) {
+        navigation.navigate('TodoApp');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const containerStyle = {
     backgroundColor: 'white',
     padding: 20,
     marginLeft: 20,
     marginRight: 20,
   };
+
   return (
     <View>
       <View style={{padding: 10, width: 120, flexDirection: 'row'}}>
-        <Button icon="file-document-edit" color="blue" onPress={showModal}>
-          edit
-        </Button>
-        <Button
-          icon="delete"
-          color="red"
-          onPress={() => console.log('Pressed')}>
-          delete
-        </Button>
+        <ButtonComponent showModal={showModal} DeleteTodo={DeleteTodo} />
       </View>
       <View style={{padding: 20, marginTop: -20}}>
         <Title>{task}</Title>
       </View>
-      <Portal>
-        <Modal
-          visible={visible}
-          onDismiss={hideModal}
-          contentContainerStyle={containerStyle}>
-          <Headline>Edit Task</Headline>
-          <TextInput
-            label="Task"
-            name="task"
-            value={task}
-            onChangeText={val => setTask(val)}
-          />
-          <Button mode="contained" onPress={EditTodo} style={{marginTop: 20}}>
-            Edit
-          </Button>
-        </Modal>
-      </Portal>
+      <PortalComponent
+        hideModal={hideModal}
+        setTask={setTask}
+        visible={visible}
+        containerStyle={containerStyle}
+        task={task}
+        EditTodo={EditTodo}
+      />
     </View>
   );
 }
