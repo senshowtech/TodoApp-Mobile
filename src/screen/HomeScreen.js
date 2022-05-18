@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, ScrollView} from 'react-native';
+import {View, SafeAreaView, FlatList} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-import {getUniqueId, getManufacturer} from 'react-native-device-info';
+import {getUniqueId} from 'react-native-device-info';
 import {API} from '../config/axios';
 import ButtonComponent from '../component/Home/ButtonComponent';
 import CardComponent from '../component/Home/CardComponent';
@@ -16,6 +16,10 @@ export default function HomeScreen() {
     doing: '',
   });
   const [dataTodo, setdataTodo] = React.useState([]);
+  const page = React.useRef({
+    current_page: 1,
+    last_page: 0,
+  });
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
   const isFocused = useIsFocused();
@@ -23,8 +27,16 @@ export default function HomeScreen() {
   React.useEffect(() => {
     const getTodo = async () => {
       try {
-        const response = await API.get(`/todos/${getUniqueId()}`);
-        setdataTodo(response.data.data.todo);
+        if (page.current.current_page === 1) {
+          const response = await API.get(
+            `/todos/pagination/${getUniqueId()}/1`,
+          );
+          setdataTodo(response.data.data.todos);
+          page.current = {
+            current_page: response.data.data.current_page,
+            last_page: response.data.data.last_page,
+          };
+        }
       } catch (error) {
         console.log(error);
       }
@@ -62,6 +74,25 @@ export default function HomeScreen() {
     }
   };
 
+  const renderItem = ({item}) => <CardComponent key={item.id} item={item} />;
+
+  const fetchData = async () => {
+    try {
+      page.current = {
+        ...page.current,
+        current_page: page.current.current_page + 1,
+      };
+      if (page.current.current_page <= page.current.last_page) {
+        const response = await API.get(
+          `/todos/pagination/${getUniqueId()}/${page.current.current_page}`,
+        );
+        setdataTodo(dataTodo.concat(response.data.data.todos));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const containerStyle = {
     backgroundColor: 'white',
     padding: 20,
@@ -70,14 +101,19 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView>
+    <SafeAreaView>
       <View style={{marginTop: 20}}>
         <ButtonComponent showModal={showModal} setVisible={setVisible} />
       </View>
+      <FlatList
+        style={{padding: 20}}
+        data={dataTodo}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        onEndReachedThreshol={0.2}
+        onEndReached={fetchData}
+      />
       <View style={{padding: 15, marginTop: -10}}>
-        {dataTodo.map(item => {
-          return <CardComponent key={item.id} item={item} />;
-        })}
         <PortalComponent
           hideModal={hideModal}
           setTask={setTask}
@@ -87,6 +123,6 @@ export default function HomeScreen() {
           SaveTodo={SaveTodo}
         />
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
